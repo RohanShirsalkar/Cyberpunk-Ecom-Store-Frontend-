@@ -2,10 +2,15 @@ import { useState } from "react";
 import { ShoppingCart, Search, Menu, X, Cpu } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getAuthState, toggleAuthDialog } from "../store/auth/authSlice";
-import { showInfoToast } from "../store/app/appSlice";
+import {
+  getAuthState,
+  removeUser,
+  toggleAuthDialog,
+} from "../store/auth/authSlice";
+import { showErrorToast, showInfoToast } from "../store/app/appSlice";
 import { getCartState, toggleCart } from "../store/cart/cartSlice";
 import ButtonSpinner from "./spinners/ButtonSpinner";
+import { userLogout } from "../api/auth/authService";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -19,7 +24,15 @@ const Navbar = () => {
     if (!isLoggedIn) {
       dispatch(toggleAuthDialog());
     } else {
-      dispatch(showInfoToast({ message: "Work in progress", title: "INFO" }));
+      // Handle user logout
+      userLogout()
+        .then((res) => {
+          dispatch(removeUser());
+          dispatch(showInfoToast({ message: res.message, title: "LOGOUT" }));
+        })
+        .catch((err) => {
+          dispatch(showErrorToast({ message: err.message, title: "ERROR" }));
+        });
     }
   };
 

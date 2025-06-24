@@ -1,8 +1,8 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { authState } from "./authModels";
+import type { AuthState } from "./authTypes";
 import type { RootState } from "../store";
 
-const initialState: authState = {
+const initialState: AuthState = {
     isAuthDialogOpen: false,
     userId: localStorage.getItem("userId") || "",
     isLoggedIn: localStorage.getItem("userId") ? true : false
@@ -19,10 +19,15 @@ export const authSlice = createSlice({
             state.isLoggedIn = true
             state.userId = payload.id
             localStorage.setItem("userId", payload.id)
+        },
+        removeUser: (state) => {
+            state.isLoggedIn = false
+            state.userId = ""
+            localStorage.removeItem("userId")
         }
     }
 });
 
-export const { toggleAuthDialog, setUser } = authSlice.actions;
+export const { toggleAuthDialog, setUser, removeUser } = authSlice.actions;
 export const getAuthState = (state: RootState) => state.auth
 export default authSlice.reducer;
