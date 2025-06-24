@@ -10,13 +10,28 @@ import {
   showSuccessToast,
 } from "../store/app/appSlice";
 import useAppDispatch from "../hooks/useAppDispatch";
-import { fetchCart } from "../store/cart/cartSlice";
+import { fetchCart, getCartState } from "../store/cart/cartSlice";
+import { useEffect, useState } from "react";
+import { Minus, Plus } from "lucide-react";
 
 const ProductCard = ({ product }: { product: Product }) => {
+  const [isProductInCart, setIsProductInCart] = useState<boolean>(false);
+  const [quantity, setQuantity] = useState(1);
+
+  const { cartItems } = useSelector(getCartState);
   const { userId, isLoggedIn } = useSelector(getAuthState);
 
   const dispatch = useDispatch();
   const appDispatch = useAppDispatch();
+
+  useEffect(() => {
+    for (let item of cartItems) {
+      if (item._id === product._id) {
+        console.log("YESSSSSS");
+        setIsProductInCart(true);
+      }
+    }
+  });
 
   const { mutate, status } = useMutation({
     mutationFn: () =>
@@ -78,12 +93,68 @@ const ProductCard = ({ product }: { product: Product }) => {
       <p className="text-3xl font-bold text-pink-400 mb-4 font-mono">
         {product.price}₵
       </p>
-      <button
-        onClick={handleAddToCart}
-        className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-4 rounded font-mono transition-all duration-300 border border-pink-400 hover:shadow-lg hover:shadow-pink-400/30"
-      >
-        {status === "pending" ? <ButtonSpinner /> : "ADD_TO_CART"}
-      </button>
+
+      {isProductInCart ? (
+        <div className="flex items-center justify-center gap-2 mt-auto">
+          {/* Decrement Button */}
+          <button
+            // onClick={decrement}
+            // disabled={quantity <= 1}
+            className={`
+                flex-1 h-12 rounded font-bold text-lg transition-all duration-200 
+                flex items-center justify-center border-2
+                ${
+                  quantity <= 1
+                    ? "bg-slate-700 border-slate-600 text-slate-500 cursor-not-allowed"
+                    : "bg-gradient-to-br from-purple-600 to-pink-600 border-purple-500 text-white hover:from-purple-500 hover:to-pink-500 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25"
+                }
+              `}
+          >
+            <Minus className="w-5 h-5" />
+          </button>
+
+          {/* Quantity Display/Input */}
+          <div className="relative">
+            <input
+              type="number"
+              value={quantity}
+              // onChange={handleInputChange}
+              min="1"
+              max="99"
+              className={`
+                  flex-1 h-12 bg-slate-700 border-2 border-slate-600 rounded 
+                  text-white text-xl font-bold text-center
+                  focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/50
+                  transition-all duration-200
+                `}
+            />
+          </div>
+
+          {/* Increment Button */}
+          <button
+            // onClick={increment}
+            disabled={quantity >= 99}
+            className={`
+                h-12 rounded font-bold text-lg transition-all duration-200 
+                flex flex-1 items-center justify-center border-2
+                ${
+                  quantity >= 99
+                    ? "bg-slate-700 border-slate-600 text-slate-500 cursor-not-allowed"
+                    : "bg-gradient-to-br from-purple-600 to-pink-600 border-purple-500 text-white hover:from-purple-500 hover:to-pink-500 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25"
+                }
+              `}
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={handleAddToCart}
+          className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-4 rounded font-mono transition-all duration-300 border border-pink-400 hover:shadow-lg hover:shadow-pink-400/30"
+        >
+          {status === "pending" ? <ButtonSpinner /> : "ADD_TO_CART"}
+        </button>
+      )}
     </div>
   );
 };
