@@ -5,12 +5,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAuthState, toggleAuthDialog } from "../store/auth/authSlice";
 import { showInfoToast } from "../store/app/appSlice";
 import { getCartState, toggleCart } from "../store/cart/cartSlice";
+import ButtonSpinner from "./spinners/ButtonSpinner";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const { totalItmes: totalCartItems } = useSelector(getCartState);
 
+  const { totalItmes: totalCartItems, isLoading } = useSelector(getCartState);
   const { isLoggedIn } = useSelector(getAuthState);
+
   const dispatch = useDispatch();
 
   const handleAuth = () => {
@@ -105,8 +107,12 @@ const Navbar = () => {
               onClick={() => dispatch(toggleCart())}
               className="relative p-2 text-cyan-300 hover:text-pink-400 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-400/20"
             >
-              <ShoppingCart className="h-6 w-6" />
-              {totalCartItems > 0 && (
+              {isLoading ? (
+                <ButtonSpinner />
+              ) : (
+                <ShoppingCart className="h-6 w-6" />
+              )}
+              {totalCartItems > 0 && !isLoading && (
                 <span className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-500 to-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
                   {totalCartItems}
                 </span>

@@ -14,7 +14,7 @@ interface CartState {
 }
 
 const initialState: CartState = {
-    isCartOpen: true,
+    isCartOpen: false,
     isLoading: false,
     error: null,
     totalItmes: 0,

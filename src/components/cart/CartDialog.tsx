@@ -2,7 +2,6 @@ import {
   X,
   Plus,
   Minus,
-  Trash2,
   ShoppingCart,
   CreditCard,
   Shield,
@@ -137,12 +136,6 @@ const CartDialog = () => {
                       <p className="text-xl font-bold text-pink-400 font-mono">
                         {(parseFloat(item.price) * 1).toFixed(2)}₵
                       </p>
-                      {/* <button
-                        // onClick={() => removeItem(item.id)}
-                        className="text-red-400 hover:text-red-300 transition-colors mt-1"
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </button> */}
                     </div>
                   </div>
                 </div>
