@@ -4,7 +4,7 @@ import type { RootState } from "../store";
 
 const initialState: authState = {
     isAuthDialogOpen: false,
-    userId: localStorage.getItem("userId"),
+    userId: localStorage.getItem("userId") || "",
     isLoggedIn: localStorage.getItem("userId") ? true : false
 };
 

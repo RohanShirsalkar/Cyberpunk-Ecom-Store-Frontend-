@@ -1,11 +1,18 @@
 export interface CartItem {
-    productId: string;
-    productQty: number;
+    _id: string;
+    name: string;
+    price: string;
+    img: string;
+    category: string;
+    rating: number;
+    inStockValue: number;
+    visibility: "on" | "off";
 }
 
 export interface UserCart {
-    userId: string;
-    productsInCart: CartItem[];
+    success: boolean;
+    cartTotal: string;
+    cartItems: CartItem[];
 }
 
 

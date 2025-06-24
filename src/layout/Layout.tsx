@@ -6,15 +6,19 @@ import AuthDialog from "../components/auth/AuthDialog";
 import { useSelector } from "react-redux";
 import { getAuthState } from "../store/auth/authSlice";
 import Notification from "../components/notification/Notification";
+import CartDialog from "../components/cart/CartDialog";
+import { getCartState } from "../store/cart/cartSlice";
 
 const layout = () => {
   const { isAuthDialogOpen } = useSelector(getAuthState);
+  const { isCartOpen } = useSelector(getCartState);
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
       <AnimatedBackground />
       <div className="relative z-10">
         <Navbar />
         <Notification />
+        {isCartOpen && <CartDialog />}
         {isAuthDialogOpen && <AuthDialog />}
         <Outlet />
         <Footer />
