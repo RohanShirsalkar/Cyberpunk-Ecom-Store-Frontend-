@@ -7,21 +7,18 @@ import {
   CreditCard,
   Shield,
   Zap,
-  AlertCircle,
-  Heading1,
   CreditCardIcon,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { getCartState, toggleCart } from "../../store/cart/cartSlice";
 
 const CartDialog = () => {
-  const { cartItems, isLoading, totalItmes, cartTotal } =
-    useSelector(getCartState);
+  const { cartItems, totalItmes, cartTotal } = useSelector(getCartState);
 
   const dispatch = useDispatch();
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-50 flex items-center justify-center sm:p-4">
       <div className="bg-black bg-opacity-90 border-2 border-cyan-400 rounded-lg max-w-4xl w-full max-h-screen overflow-y-auto shadow-2xl shadow-cyan-400/20">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-cyan-400">
@@ -63,7 +60,7 @@ const CartDialog = () => {
                   key={item._id}
                   className="bg-black bg-opacity-60 border border-gray-700 rounded-lg p-4 hover:border-cyan-400 transition-all"
                 >
-                  <div className="flex items-center space-x-4">
+                  <div className="flex flex-col sm:flex-row items-center space-x-4">
                     {/* Product Image */}
                     <div className="relative">
                       <img
@@ -89,10 +86,10 @@ const CartDialog = () => {
                       <h4 className="text-white font-mono font-bold">
                         {item.name}
                       </h4>
-                      <p className="text-cyan-400 font-mono text-sm">
+                      <p className="text-cyan-400 font-mono text-sm text-center sm:text-start">
                         [{item.category}]
                       </p>
-                      <div className="flex items-center space-x-2 mt-1">
+                      <div className="flex items-center justify-center md:justify-normal space-x-2 mt-1">
                         <span className="text-pink-400 font-mono font-bold">
                           {item.price}₵
                         </span>
@@ -140,12 +137,12 @@ const CartDialog = () => {
                       <p className="text-xl font-bold text-pink-400 font-mono">
                         {(parseFloat(item.price) * 1).toFixed(2)}₵
                       </p>
-                      <button
+                      {/* <button
                         // onClick={() => removeItem(item.id)}
                         className="text-red-400 hover:text-red-300 transition-colors mt-1"
                       >
                         <Trash2 className="h-5 w-5" />
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 </div>

@@ -4,10 +4,11 @@ import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getAuthState, toggleAuthDialog } from "../store/auth/authSlice";
 import { showInfoToast } from "../store/app/appSlice";
+import { getCartState, toggleCart } from "../store/cart/cartSlice";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [cartItems, setCartItems] = useState<[]>([]);
+  const { totalItmes: totalCartItems } = useSelector(getCartState);
 
   const { isLoggedIn } = useSelector(getAuthState);
   const dispatch = useDispatch();
@@ -101,13 +102,13 @@ const Navbar = () => {
             </div>
 
             <button
-              //   onClick={() => dispatch(toggleCart())}
+              onClick={() => dispatch(toggleCart())}
               className="relative p-2 text-cyan-300 hover:text-pink-400 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-400/20"
             >
               <ShoppingCart className="h-6 w-6" />
-              {cartItems.length > 0 && (
+              {totalCartItems > 0 && (
                 <span className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-500 to-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                  {cartItems.length}
+                  {totalCartItems}
                 </span>
               )}
             </button>
