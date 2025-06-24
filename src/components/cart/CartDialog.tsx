@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   X,
   Plus,
@@ -13,25 +12,13 @@ import {
   CreditCardIcon,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleCart } from "../../store/cart/cartSlice";
-import { useQuery } from "@tanstack/react-query";
-import { getCartByUserId } from "../../api/cart/cartServices";
-import { getAuthState } from "../../store/auth/authSlice";
+import { getCartState, toggleCart } from "../../store/cart/cartSlice";
 
 const CartDialog = () => {
-  const { userId } = useSelector(getAuthState);
-  const { data: cartData, isLoading } = useQuery({
-    queryKey: ["cart"],
-    queryFn: () => getCartByUserId({ userId }),
-  });
-
-  const cartItems = cartData?.cartItems;
+  const { cartItems, isLoading, totalItmes, cartTotal } =
+    useSelector(getCartState);
 
   const dispatch = useDispatch();
-
-  const updateQuantity = (id: any, newQuantity: any) => {};
-
-  const removeItem = (id: any) => {};
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -44,7 +31,7 @@ const CartDialog = () => {
               CART
             </h2>
             <span className="text-green-400 font-mono text-sm">
-              [{cartItems?.length} ITEMS]
+              [{totalItmes} ITEMS]
             </span>
           </div>
           <button
@@ -225,7 +212,7 @@ const CartDialog = () => {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between text-cyan-300 font-mono">
                   <span>Subtotal:</span>
-                  <span>{cartData?.cartTotal}₵</span>
+                  <span>{cartTotal}₵</span>
                 </div>
 
                 {/* {savings > 0 && (
@@ -255,7 +242,7 @@ const CartDialog = () => {
                 <div className="border-t border-gray-600 pt-3">
                   <div className="flex justify-between text-pink-400 font-mono font-bold text-lg">
                     <span>TOTAL:</span>
-                    <span>{cartData?.cartTotal}₵</span>
+                    <span>{cartTotal}₵</span>
                   </div>
                 </div>
               </div>

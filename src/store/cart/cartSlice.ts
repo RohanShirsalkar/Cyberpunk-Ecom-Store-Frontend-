@@ -49,8 +49,8 @@ export const cartSlice = createSlice({
             state.cartTotal = payload.cartTotal;
             state.totalItmes = payload.cartItems.length;
         })
-        builder.addCase(fetchCart.rejected, (state, { payload }) => {
-            console.log("cart error : ", payload);
+        builder.addCase(fetchCart.rejected, (state, actions) => {
+            console.log("cart error : ", actions.error);
             state.isLoading = false;
             state.error = "Error while fetching cart data"
         })
