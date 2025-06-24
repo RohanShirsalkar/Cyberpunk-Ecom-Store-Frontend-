@@ -1,18 +1,12 @@
 import api from "../config"
-import type { UserCart } from "../models/cartModel"
-
-interface AddToCartRequest {
-    userId: string,
-    productId: string,
-    quantity: number
-}
+import type { AddToCartRequest, AddToCartResponse, UserCart } from "../models/cartModel"
 
 export const getCartByUserId = async (data: { userId: string }): Promise<UserCart> => {
     const response = await api.post<UserCart>("/cart/get-cart", data)
     return response.data
 }
 
-export const addToCart = async (data: AddToCartRequest): Promise<UserCart> => {
-    const response = await api.post<UserCart>("/cart/addtocart", data)
+export const addToCart = async (data: AddToCartRequest): Promise<AddToCartResponse> => {
+    const response = await api.post<AddToCartResponse>("/cart/addtocart", data)
     return response.data
 }

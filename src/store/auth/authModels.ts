@@ -1,5 +1,5 @@
 export interface authState {
     isAuthDialogOpen: boolean;
-    userId: string | null;
+    userId: string;
     isLoggedIn: boolean;
 }
