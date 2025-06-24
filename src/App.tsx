@@ -11,7 +11,9 @@ function App() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchCart({ userId }));
+    if (userId) {
+      dispatch(fetchCart({ userId }));
+    }
   }, []);
 
   return (

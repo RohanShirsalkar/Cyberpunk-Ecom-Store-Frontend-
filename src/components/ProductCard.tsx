@@ -4,24 +4,44 @@ import { addToCart } from "../api/cart/cartServices";
 import { useDispatch, useSelector } from "react-redux";
 import { getAuthState } from "../store/auth/authSlice";
 import ButtonSpinner from "./spinners/ButtonSpinner";
-import { showErrorToast, showSuccessToast } from "../store/app/appSlice";
+import {
+  showErrorToast,
+  showInfoToast,
+  showSuccessToast,
+} from "../store/app/appSlice";
+import useAppDispatch from "../hooks/useAppDispatch";
+import { fetchCart } from "../store/cart/cartSlice";
 
 const ProductCard = ({ product }: { product: Product }) => {
-  const { userId } = useSelector(getAuthState);
+  const { userId, isLoggedIn } = useSelector(getAuthState);
 
   const dispatch = useDispatch();
+  const appDispatch = useAppDispatch();
 
   const { mutate, status } = useMutation({
     mutationFn: () =>
       addToCart({ productId: product._id, quantity: 1, userId: userId }),
     onSuccess: (res) => {
       dispatch(showSuccessToast({ title: "Added", message: res.message }));
+      appDispatch(fetchCart({ userId }));
     },
     onError: (err) => {
       console.log(err);
       dispatch(showErrorToast({ title: "Not Added", message: err.message }));
     },
   });
+
+  const handleAddToCart = () => {
+    if (!isLoggedIn) {
+      return dispatch(
+        showInfoToast({
+          title: "USER NOT LOGGED IN",
+          message: "Please login to continue",
+        })
+      );
+    }
+    mutate();
+  };
 
   return (
     <div
@@ -59,7 +79,7 @@ const ProductCard = ({ product }: { product: Product }) => {
         {product.price}₵
       </p>
       <button
-        onClick={() => mutate()}
+        onClick={handleAddToCart}
         className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-4 rounded font-mono transition-all duration-300 border border-pink-400 hover:shadow-lg hover:shadow-pink-400/30"
       >
         {status === "pending" ? <ButtonSpinner /> : "ADD_TO_CART"}
