@@ -27,6 +27,10 @@ const ProductCard = ({ product }: { product: Product }) => {
           setQuantity(item.productQty);
         }
       }
+      const isNotInCart = !cartItems.some((item) => item._id === product._id);
+      if (isNotInCart) {
+        setIsProductInCart(false);
+      }
     } else {
       setIsProductInCart(false);
       setQuantity(1);
