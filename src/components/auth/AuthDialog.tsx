@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { userLogin, userSignup } from "../../api/auth/authService";
 import { isAxiosError } from "axios";
 import { showErrorToast, showSuccessToast } from "../../store/app/appSlice";
+import useCart from "../../hooks/useCart";
 
 interface Form {
   email: string;
@@ -26,6 +27,7 @@ const AuthDialog = () => {
     username: "",
   });
   const dispatch = useDispatch();
+  const { getCart } = useCart();
 
   const resetForm = () => {
     setFormData({
@@ -41,6 +43,7 @@ const AuthDialog = () => {
     mutationFn: userLogin,
     onSuccess: (res) => {
       dispatch(setUser({ id: res.userId }));
+      getCart();
       dispatch(toggleAuthDialog());
       dispatch(
         showSuccessToast({ title: "Success", message: "User logged in" })

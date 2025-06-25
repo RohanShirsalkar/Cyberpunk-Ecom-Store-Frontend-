@@ -7,14 +7,14 @@ import { useSelector } from "react-redux";
 import { getAuthState } from "./store/auth/authSlice";
 
 function App() {
-  const { userId } = useSelector(getAuthState);
+  const { userId, isLoggedIn } = useSelector(getAuthState);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (userId) {
+    if (isLoggedIn) {
       dispatch(fetchCart({ userId }));
     }
-  }, []);
+  }, [userId, isLoggedIn]);
 
   return (
     <div>

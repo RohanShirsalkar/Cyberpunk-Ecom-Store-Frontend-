@@ -7,6 +7,7 @@ export interface CartItem {
     rating: number;
     inStockValue: number;
     visibility: "on" | "off";
+    productQty: number;
 }
 
 export interface UserCart {
@@ -26,4 +27,23 @@ export interface AddToCartResponse {
     success: boolean,
     message: string,
     cart: UserCart
+}
+
+export interface UpdateCartProductQtyRequest {
+    userId: string,
+    productId: string,
+    productQty: number
+}
+
+export interface UpdateCartProductQtyResponse {
+    message: string,
+}
+
+export interface RemoveCartProductRequest {
+    userId: string,
+    productId: string
+}
+
+export interface RemoveCartProductResponse {
+    message: string,
 }

@@ -11,6 +11,7 @@ import { showErrorToast, showInfoToast } from "../store/app/appSlice";
 import { getCartState, toggleCart } from "../store/cart/cartSlice";
 import ButtonSpinner from "./spinners/ButtonSpinner";
 import { userLogout } from "../api/auth/authService";
+import useCart from "../hooks/useCart";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -19,6 +20,7 @@ const Navbar = () => {
   const { isLoggedIn } = useSelector(getAuthState);
 
   const dispatch = useDispatch();
+  const { clearCart } = useCart();
 
   const handleAuth = () => {
     if (!isLoggedIn) {
@@ -29,6 +31,7 @@ const Navbar = () => {
         .then((res) => {
           dispatch(removeUser());
           dispatch(showInfoToast({ message: res.message, title: "LOGOUT" }));
+          clearCart();
         })
         .catch((err) => {
           dispatch(showErrorToast({ message: err.message, title: "ERROR" }));

@@ -36,6 +36,13 @@ export const cartSlice = createSlice({
             state.cartId = payload.cartId;
             state.cartItems = payload.cartItems;
             state.totalItmes = payload.cartItems.length;
+        },
+        resetCart: (state) => {
+            state.cartId = "";
+            state.cartItems = [];
+            state.cartId = "";
+            state.cartTotal = "";
+            state.totalItmes = 0;
         }
     },
     extraReducers: (builder) => {
@@ -58,6 +65,6 @@ export const cartSlice = createSlice({
     }
 })
 
-export const { toggleCart } = cartSlice.actions
+export const { toggleCart, resetCart } = cartSlice.actions
 export const getCartState = (state: RootState) => state.cart
 export default cartSlice.reducer;

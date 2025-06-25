@@ -1,50 +1,37 @@
-import { useMutation } from "@tanstack/react-query";
 import type { Product } from "../api/models/ProductModel";
-import { addToCart } from "../api/cart/cartServices";
 import { useDispatch, useSelector } from "react-redux";
 import { getAuthState } from "../store/auth/authSlice";
 import ButtonSpinner from "./spinners/ButtonSpinner";
-import {
-  showErrorToast,
-  showInfoToast,
-  showSuccessToast,
-} from "../store/app/appSlice";
-import useAppDispatch from "../hooks/useAppDispatch";
-import { fetchCart, getCartState } from "../store/cart/cartSlice";
+import { showInfoToast } from "../store/app/appSlice";
+import { getCartState } from "../store/cart/cartSlice";
 import { useEffect, useState } from "react";
 import { Minus, Plus } from "lucide-react";
+import useCart from "../hooks/useCart";
 
 const ProductCard = ({ product }: { product: Product }) => {
   const [isProductInCart, setIsProductInCart] = useState<boolean>(false);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState<number>(1);
 
-  const { cartItems } = useSelector(getCartState);
   const { userId, isLoggedIn } = useSelector(getAuthState);
+  const { cartItems } = useSelector(getCartState);
+
+  const { updateQuantity, addToCart, removeFomCart } = useCart();
 
   const dispatch = useDispatch();
-  const appDispatch = useAppDispatch();
 
   useEffect(() => {
-    for (let item of cartItems) {
-      if (item._id === product._id) {
-        console.log("YESSSSSS");
-        setIsProductInCart(true);
+    if (cartItems.length > 0) {
+      for (let item of cartItems) {
+        if (item._id === product._id) {
+          setIsProductInCart(true);
+          setQuantity(item.productQty);
+        }
       }
+    } else {
+      setIsProductInCart(false);
+      setQuantity(1);
     }
-  });
-
-  const { mutate, status } = useMutation({
-    mutationFn: () =>
-      addToCart({ productId: product._id, quantity: 1, userId: userId }),
-    onSuccess: (res) => {
-      dispatch(showSuccessToast({ title: "Added", message: res.message }));
-      appDispatch(fetchCart({ userId }));
-    },
-    onError: (err) => {
-      console.log(err);
-      dispatch(showErrorToast({ title: "Not Added", message: err.message }));
-    },
-  });
+  }, [cartItems, isLoggedIn]);
 
   const handleAddToCart = () => {
     if (!isLoggedIn) {
@@ -55,7 +42,27 @@ const ProductCard = ({ product }: { product: Product }) => {
         })
       );
     }
-    mutate();
+    addToCart.mutate({ userId, productId: product._id, quantity: quantity });
+  };
+
+  const increaseQuantity = () => {
+    updateQuantity.mutate({
+      productId: product._id,
+      productQty: quantity + 1,
+      userId,
+    });
+  };
+
+  const decreaseQuantity = () => {
+    if (quantity > 1) {
+      updateQuantity.mutate({
+        productId: product._id,
+        productQty: quantity - 1,
+        userId,
+      });
+    } else {
+      removeFomCart.mutate({ productId: product._id, userId });
+    }
   };
 
   return (
@@ -98,19 +105,16 @@ const ProductCard = ({ product }: { product: Product }) => {
         <div className="flex items-center justify-center gap-2 mt-auto">
           {/* Decrement Button */}
           <button
-            // onClick={decrement}
+            name="minus"
+            onClick={decreaseQuantity}
             // disabled={quantity <= 1}
             className={`
-                flex-1 h-12 rounded font-bold text-lg transition-all duration-200 
-                flex items-center justify-center border-2
-                ${
-                  quantity <= 1
-                    ? "bg-slate-700 border-slate-600 text-slate-500 cursor-not-allowed"
-                    : "bg-gradient-to-br from-purple-600 to-pink-600 border-purple-500 text-white hover:from-purple-500 hover:to-pink-500 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25"
-                }
+                h-12 rounded font-bold text-lg transition-all duration-200 
+                flex flex-1 items-center justify-center border-2
+                bg-gradient-to-br from-purple-600 to-pink-600 border-purple-500 text-white hover:from-purple-500 hover:to-pink-500 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25
               `}
           >
-            <Minus className="w-5 h-5" />
+            <Minus className="w-5 h-5 " />
           </button>
 
           {/* Quantity Display/Input */}
@@ -132,16 +136,13 @@ const ProductCard = ({ product }: { product: Product }) => {
 
           {/* Increment Button */}
           <button
-            // onClick={increment}
+            name="plus"
+            onClick={increaseQuantity}
             disabled={quantity >= 99}
             className={`
                 h-12 rounded font-bold text-lg transition-all duration-200 
                 flex flex-1 items-center justify-center border-2
-                ${
-                  quantity >= 99
-                    ? "bg-slate-700 border-slate-600 text-slate-500 cursor-not-allowed"
-                    : "bg-gradient-to-br from-purple-600 to-pink-600 border-purple-500 text-white hover:from-purple-500 hover:to-pink-500 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25"
-                }
+                bg-gradient-to-br from-purple-600 to-pink-600 border-purple-500 text-white hover:from-purple-500 hover:to-pink-500 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25
               `}
           >
             <Plus className="w-5 h-5" />
@@ -152,7 +153,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           onClick={handleAddToCart}
           className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-4 rounded font-mono transition-all duration-300 border border-pink-400 hover:shadow-lg hover:shadow-pink-400/30"
         >
-          {status === "pending" ? <ButtonSpinner /> : "ADD_TO_CART"}
+          {addToCart.status === "pending" ? <ButtonSpinner /> : "ADD_TO_CART"}
         </button>
       )}
     </div>
