@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query"
 import { addToCartById, removeProductById, updateCartProductQty } from "../api/cart/cartServices"
 import { useDispatch, useSelector } from "react-redux"
-import { showErrorToast, showSuccessToast } from "../store/app/appSlice";
+import { showErrorToast, showInfoToast, showSuccessToast } from "../store/app/appSlice";
 import useAppDispatch from "./useAppDispatch";
 import { fetchCart, resetCart } from "../store/cart/cartSlice";
 import { getAuthState } from "../store/auth/authSlice";
@@ -47,6 +47,7 @@ const useCart = () => {
         mutationFn: removeProductById,
         onSuccess: () => {
             getCart()
+            dispatch(showInfoToast({ title: "REMOVED", message: "Product removed from cart" }));
         },
         onError: (err) => {
             console.log(err)

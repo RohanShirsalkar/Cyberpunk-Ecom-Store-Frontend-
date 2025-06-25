@@ -63,6 +63,12 @@ const AuthDialog = () => {
     mutationFn: userSignup,
     onSuccess: () => {
       setIsLogin(true);
+      dispatch(
+        showSuccessToast({
+          title: "REGISTERED",
+          message: "User registered successfuly",
+        })
+      );
     },
     onError: (err) => {
       if (isAxiosError(err)) {
