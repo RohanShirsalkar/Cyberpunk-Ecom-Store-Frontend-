@@ -5,7 +5,7 @@ import ButtonSpinner from "./spinners/ButtonSpinner";
 import { showInfoToast } from "../store/app/appSlice";
 import { getCartState } from "../store/cart/cartSlice";
 import { useEffect, useState } from "react";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Star } from "lucide-react";
 import useCart from "../hooks/useCart";
 
 const ProductCard = ({ product }: { product: Product }) => {
@@ -80,27 +80,31 @@ const ProductCard = ({ product }: { product: Product }) => {
           alt={product.name}
           className="w-full h-48 object-cover rounded border border-gray-600 group-hover:border-cyan-400 transition-all duration-300"
         />
-        {/* Add rating here */}
-        {/* <div
-          className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-mono font-bold ${
-            product. === "ONLINE"
-              ? "bg-green-500 text-black"
-              : product.status === "LIMITED"
-              ? "bg-yellow-500 text-black"
-              : product.status === "HOT"
-              ? "bg-red-500 text-white"
-              : "bg-gray-500 text-white"
-          }`}
-        >
-          {product.status}
-        </div> */}
       </div>
       <h4 className="text-xl font-bold text-white mb-2 font-mono">
         {product.name}
       </h4>
-      <p className="text-cyan-400 mb-2 font-mono text-sm">
+      <p className="text-cyan-400 font-mono text-sm mb-2">
         [{product.category}]
       </p>
+      <div className="flex items-center justify-start space-x-2 mb-2">
+        <div className="flex items-center space-x-1">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <Star
+              key={star}
+              className={`w-5 h-5 ${
+                star <= Math.floor(product.rating)
+                  ? "text-yellow-400 fill-yellow-400"
+                  : "text-slate-400"
+              }`}
+            />
+          ))}
+        </div>
+        <span className="text-slate-300 text-sm font-medium">
+          {product.rating}
+        </span>
+        {/* <span className="text-slate-400 text-xs">(2,847 reviews)</span> */}
+      </div>
       <p className="text-3xl font-bold text-pink-400 mb-4 font-mono">
         {product.price}₵
       </p>
