@@ -3,14 +3,18 @@ import { addToCartById, removeProductById, updateCartProductQty } from "../api/c
 import { useDispatch, useSelector } from "react-redux"
 import { showErrorToast, showInfoToast, showSuccessToast } from "../store/app/appSlice";
 import useAppDispatch from "./useAppDispatch";
-import { fetchCart, resetCart } from "../store/cart/cartSlice";
+import { fetchCart, resetCart, toggleCart } from "../store/cart/cartSlice";
 import { getAuthState } from "../store/auth/authSlice";
 
 const useCart = () => {
-    const { userId } = useSelector(getAuthState)
+    const { userId, isLoggedIn } = useSelector(getAuthState)
 
     const dispatch = useDispatch();
     const appDispatch = useAppDispatch();
+
+    const toggleCartDialog = () => {
+        dispatch(toggleCart())
+    }
 
     const getCart = () => {
         appDispatch(fetchCart({ userId }))
@@ -56,7 +60,41 @@ const useCart = () => {
     })
 
 
-    return { updateQuantity, addToCart, removeFomCart, getCart, clearCart }
+    const handleAddToCart = ({ productId, quantity }: { productId: string, quantity: number }) => {
+        if (!isLoggedIn) {
+            return dispatch(
+                showInfoToast({
+                    title: "USER NOT LOGGED IN",
+                    message: "Please login to continue",
+                })
+            );
+        }
+        addToCart.mutate({ userId, productId, quantity: quantity });
+    };
+
+    const increaseQuantity = ({ productId, quantity }: { productId: string, quantity: number }) => {
+        updateQuantity.mutate({
+            productId,
+            productQty: quantity + 1,
+            userId,
+        });
+    };
+
+    const decreaseQuantity = ({ productId, quantity }: { productId: string, quantity: number }) => {
+        if (quantity > 1) {
+            updateQuantity.mutate({
+                productId,
+                productQty: quantity - 1,
+                userId,
+            });
+        } else {
+            removeFomCart.mutate({ productId, userId });
+        }
+    };
+
+
+
+    return { updateQuantity, addToCart, removeFomCart, getCart, clearCart, toggleCartDialog, handleAddToCart, increaseQuantity, decreaseQuantity }
 
 }
 
