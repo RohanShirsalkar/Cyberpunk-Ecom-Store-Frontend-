@@ -1,8 +1,7 @@
 import type { Product } from "../api/models/ProductModel";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { getAuthState } from "../store/auth/authSlice";
 import ButtonSpinner from "./spinners/ButtonSpinner";
-import { showInfoToast } from "../store/app/appSlice";
 import { getCartState } from "../store/cart/cartSlice";
 import { useEffect, useState } from "react";
 import { Minus, Plus, Star } from "lucide-react";
@@ -13,12 +12,15 @@ const ProductCard = ({ product }: { product: Product }) => {
   const [isProductInCart, setIsProductInCart] = useState<boolean>(false);
   const [quantity, setQuantity] = useState<number>(1);
 
-  const { userId, isLoggedIn } = useSelector(getAuthState);
+  const { isLoggedIn } = useSelector(getAuthState);
   const { cartItems } = useSelector(getCartState);
 
-  const { updateQuantity, addToCart, removeFomCart } = useCart();
-
-  const dispatch = useDispatch();
+  const {
+    addToCartQuery,
+    handleAddToCart,
+    increaseQuantity,
+    decreaseQuantity,
+  } = useCart();
 
   useEffect(() => {
     if (cartItems.length > 0) {
@@ -37,38 +39,6 @@ const ProductCard = ({ product }: { product: Product }) => {
       setQuantity(1);
     }
   }, [cartItems, isLoggedIn]);
-
-  const handleAddToCart = () => {
-    if (!isLoggedIn) {
-      return dispatch(
-        showInfoToast({
-          title: "USER NOT LOGGED IN",
-          message: "Please login to continue",
-        })
-      );
-    }
-    addToCart.mutate({ userId, productId: product._id, quantity: quantity });
-  };
-
-  const increaseQuantity = () => {
-    updateQuantity.mutate({
-      productId: product._id,
-      productQty: quantity + 1,
-      userId,
-    });
-  };
-
-  const decreaseQuantity = () => {
-    if (quantity > 1) {
-      updateQuantity.mutate({
-        productId: product._id,
-        productQty: quantity - 1,
-        userId,
-      });
-    } else {
-      removeFomCart.mutate({ productId: product._id, userId });
-    }
-  };
 
   return (
     <div
@@ -117,7 +87,9 @@ const ProductCard = ({ product }: { product: Product }) => {
           {/* Decrement Button */}
           <button
             name="minus"
-            onClick={decreaseQuantity}
+            onClick={() =>
+              decreaseQuantity({ quantity, productId: product._id })
+            }
             // disabled={quantity <= 1}
             className={`
                 h-12 rounded font-bold text-lg transition-all duration-200 
@@ -148,7 +120,9 @@ const ProductCard = ({ product }: { product: Product }) => {
           {/* Increment Button */}
           <button
             name="plus"
-            onClick={increaseQuantity}
+            onClick={() =>
+              increaseQuantity({ quantity, productId: product._id })
+            }
             disabled={quantity >= 99}
             className={`
                 h-12 rounded font-bold text-lg transition-all duration-200 
@@ -161,10 +135,14 @@ const ProductCard = ({ product }: { product: Product }) => {
         </div>
       ) : (
         <button
-          onClick={handleAddToCart}
+          onClick={() => handleAddToCart({ quantity, productId: product._id })}
           className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-4 rounded font-mono transition-all duration-300 border border-pink-400 hover:shadow-lg hover:shadow-pink-400/30"
         >
-          {addToCart.status === "pending" ? <ButtonSpinner /> : "ADD_TO_CART"}
+          {addToCartQuery.status === "pending" ? (
+            <ButtonSpinner />
+          ) : (
+            "ADD_TO_CART"
+          )}
         </button>
       )}
     </div>

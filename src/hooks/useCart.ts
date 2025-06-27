@@ -24,7 +24,7 @@ const useCart = () => {
         dispatch(resetCart())
     }
 
-    const addToCart = useMutation({
+    const addToCartQuery = useMutation({
         mutationFn: addToCartById,
         onSuccess: (res) => {
             dispatch(showSuccessToast({ title: "ADDED", message: res.message }));
@@ -36,7 +36,7 @@ const useCart = () => {
         },
     });
 
-    const updateQuantity = useMutation({
+    const updateQuantityQuery = useMutation({
         mutationFn: updateCartProductQty,
         onSuccess: () => {
             getCart()
@@ -47,7 +47,7 @@ const useCart = () => {
         }
     })
 
-    const removeFomCart = useMutation({
+    const removeFomCartQuery = useMutation({
         mutationFn: removeProductById,
         onSuccess: () => {
             getCart()
@@ -69,11 +69,11 @@ const useCart = () => {
                 })
             );
         }
-        addToCart.mutate({ userId, productId, quantity: quantity });
+        addToCartQuery.mutate({ userId, productId, quantity: quantity });
     };
 
     const increaseQuantity = ({ productId, quantity }: { productId: string, quantity: number }) => {
-        updateQuantity.mutate({
+        updateQuantityQuery.mutate({
             productId,
             productQty: quantity + 1,
             userId,
@@ -82,19 +82,19 @@ const useCart = () => {
 
     const decreaseQuantity = ({ productId, quantity }: { productId: string, quantity: number }) => {
         if (quantity > 1) {
-            updateQuantity.mutate({
+            updateQuantityQuery.mutate({
                 productId,
                 productQty: quantity - 1,
                 userId,
             });
         } else {
-            removeFomCart.mutate({ productId, userId });
+            removeFomCartQuery.mutate({ productId, userId });
         }
     };
 
 
 
-    return { updateQuantity, addToCart, removeFomCart, getCart, clearCart, toggleCartDialog, handleAddToCart, increaseQuantity, decreaseQuantity }
+    return { updateQuantityQuery, addToCartQuery, removeFomCartQuery, getCart, clearCart, toggleCartDialog, handleAddToCart, increaseQuantity, decreaseQuantity }
 
 }
 

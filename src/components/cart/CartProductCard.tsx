@@ -8,10 +8,10 @@ import { getCartState } from "../../store/cart/cartSlice";
 
 const CartProductCard = ({ item }: { item: CartItem }) => {
   const [quantity, setQuantity] = useState<number>(1);
-  const { userId, isLoggedIn } = useSelector(getAuthState);
+  const { isLoggedIn } = useSelector(getAuthState);
   const { cartItems } = useSelector(getCartState);
 
-  const { updateQuantity, removeFomCart } = useCart();
+  const { increaseQuantity, decreaseQuantity } = useCart();
 
   useEffect(() => {
     if (cartItems.length > 0) {
@@ -22,26 +22,6 @@ const CartProductCard = ({ item }: { item: CartItem }) => {
       }
     }
   }, [cartItems, isLoggedIn]);
-
-  const increaseQuantity = () => {
-    updateQuantity.mutate({
-      productId: item._id,
-      productQty: quantity + 1,
-      userId,
-    });
-  };
-
-  const decreaseQuantity = () => {
-    if (quantity > 1) {
-      updateQuantity.mutate({
-        productId: item._id,
-        productQty: quantity - 1,
-        userId,
-      });
-    } else {
-      removeFomCart.mutate({ productId: item._id, userId });
-    }
-  };
 
   return (
     <div
@@ -77,7 +57,7 @@ const CartProductCard = ({ item }: { item: CartItem }) => {
         {/* Quantity Controls */}
         <div className="flex items-center space-x-2">
           <button
-            onClick={decreaseQuantity}
+            onClick={() => decreaseQuantity({ productId: item._id, quantity })}
             className="w-8 h-8 bg-black border border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black transition-all rounded font-mono flex items-center justify-center"
           >
             <Minus className="h-4 w-4" />
@@ -86,7 +66,7 @@ const CartProductCard = ({ item }: { item: CartItem }) => {
             {quantity}
           </span>
           <button
-            onClick={increaseQuantity}
+            onClick={() => increaseQuantity({ productId: item._id, quantity })}
             className="w-8 h-8 bg-black border border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black transition-all rounded font-mono flex items-center justify-center"
           >
             <Plus className="h-4 w-4" />
