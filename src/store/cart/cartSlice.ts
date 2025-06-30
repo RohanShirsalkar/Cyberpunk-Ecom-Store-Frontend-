@@ -54,7 +54,7 @@ export const cartSlice = createSlice({
             state.isLoading = false;
             state.cartItems = payload.cartItems;
             state.cartTotal = payload.cartTotal;
-            state.totalItmes = payload.cartItems.length;
+            state.totalItmes = payload.cartItems.reduce((total, item) => total + item.productQty, 0);
         })
         builder.addCase(fetchCart.rejected, (state, actions) => {
             console.log("cart error : ", actions.error);

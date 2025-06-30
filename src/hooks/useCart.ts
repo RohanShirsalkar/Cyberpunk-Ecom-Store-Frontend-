@@ -80,6 +80,10 @@ const useCart = () => {
         });
     };
 
+    const removeFromCart = ({ productId }: { productId: string }) => {
+        removeFomCartQuery.mutate({ productId, userId });
+    }
+
     const decreaseQuantity = ({ productId, quantity }: { productId: string, quantity: number }) => {
         if (quantity > 1) {
             updateQuantityQuery.mutate({
@@ -88,13 +92,13 @@ const useCart = () => {
                 userId,
             });
         } else {
-            removeFomCartQuery.mutate({ productId, userId });
+            removeFromCart({ productId })
         }
     };
 
 
 
-    return { updateQuantityQuery, addToCartQuery, removeFomCartQuery, getCart, clearCart, toggleCartDialog, handleAddToCart, increaseQuantity, decreaseQuantity }
+    return { updateQuantityQuery, addToCartQuery, removeFomCartQuery, getCart, clearCart, toggleCartDialog, handleAddToCart, increaseQuantity, decreaseQuantity, removeFromCart }
 
 }
 

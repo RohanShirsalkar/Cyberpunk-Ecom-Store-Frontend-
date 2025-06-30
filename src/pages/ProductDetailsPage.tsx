@@ -10,6 +10,7 @@ import { getCartState } from "../store/cart/cartSlice";
 import { getAuthState } from "../store/auth/authSlice";
 import useCart from "../hooks/useCart";
 import PageNotFound from "./PageNotFound";
+import RecommendedProducts from "../components/ProductDetailsPage/RecommendedProducts";
 
 type Params = {
   productId: string;
@@ -250,6 +251,10 @@ const ProductDetailsPage = () => {
         </div>
 
         {/* Product Details Tabs */}
+        <RecommendedProducts
+          productId={productId}
+          category={product?.category || ""}
+        />
         {/* <InfoTabs product={product} /> */}
       </div>
     </div>

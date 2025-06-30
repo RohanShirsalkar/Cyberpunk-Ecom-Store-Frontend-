@@ -6,6 +6,17 @@ interface ProductsResponse {
     products: Product[];
 }
 
+interface HomeProductResponse {
+    success: boolean;
+    products: Product[];
+    accessories: Product[];
+}
+
+interface RecommendedProductResponse {
+    success: boolean;
+    products: Product[];
+}
+
 export const getAllProducts = async (): Promise<ProductsResponse> => {
     const response = await api.get<ProductsResponse>("/get-product")
     return response.data
@@ -14,4 +25,14 @@ export const getAllProducts = async (): Promise<ProductsResponse> => {
 export const getProductById = async (id: string): Promise<ProductDetails> => {
     const response = await api.get<{ success: boolean; product: ProductDetails }>(`/product/${id}`);
     return response.data.product;
+}
+
+export const getHomeProducts = async (): Promise<HomeProductResponse> => {
+    const response = await api.get<HomeProductResponse>("/product/home-products");
+    return response.data
+}
+
+export const getRecommendedProducts = async ({ productId, category }: { productId: string, category: string }): Promise<RecommendedProductResponse> => {
+    const response = await api.get<RecommendedProductResponse>(`/product/recommended?productId=${productId}&category=${category}`);
+    return response.data
 }

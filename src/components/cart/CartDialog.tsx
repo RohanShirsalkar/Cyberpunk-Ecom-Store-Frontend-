@@ -9,11 +9,22 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { getCartState, toggleCart } from "../../store/cart/cartSlice";
 import CartProductCard from "./CartProductCard";
+import { useNavigate } from "react-router-dom";
 
 const CartDialog = () => {
   const { cartItems, totalItmes, cartTotal } = useSelector(getCartState);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleCheckout = () => {
+    if (cartItems?.length === 0) {
+      navigate("/");
+    } else {
+      navigate("/checkout");
+      dispatch(toggleCart());
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-50 flex items-center justify-center sm:p-4">
@@ -169,6 +180,7 @@ const CartDialog = () => {
 
             {/* Checkout Button */}
             <button
+              onClick={handleCheckout}
               className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-4 px-6 rounded font-mono text-lg transition-all duration-300 transform hover:scale-105 shadow-lg shadow-pink-400/30 border border-pink-400 flex items-center justify-center space-x-2"
               disabled={
                 cartItems?.length === 0 ||
