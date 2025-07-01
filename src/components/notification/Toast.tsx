@@ -88,7 +88,7 @@ const Toast = ({ id, type, title, message }: Props) => {
       />
 
       {/* Content */}
-      <div className="relative z-10 flex items-start space-x-3">
+      <div className="relative flex items-start space-x-3">
         {/* Icon */}
         <div
           className={`flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-r ${styles.gradient} flex items-center justify-center text-black font-bold text-sm`}

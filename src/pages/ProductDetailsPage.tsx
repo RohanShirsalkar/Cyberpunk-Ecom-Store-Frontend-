@@ -7,7 +7,6 @@ import { getProductById } from "../api/product/productServices";
 import AllProductsPageSkeleton from "../components/skeletons/AllProductsPageSkeleton";
 import { useSelector } from "react-redux";
 import { getCartState } from "../store/cart/cartSlice";
-import { getAuthState } from "../store/auth/authSlice";
 import useCart from "../hooks/useCart";
 import PageNotFound from "./PageNotFound";
 import RecommendedProducts from "../components/ProductDetailsPage/RecommendedProducts";
@@ -21,7 +20,6 @@ const ProductDetailsPage = () => {
   const [isInCart, setIsInCart] = useState(false);
 
   const { cartItems } = useSelector(getCartState);
-  const { isLoggedIn } = useSelector(getAuthState);
 
   const { productId } = useParams<Params>();
   const {

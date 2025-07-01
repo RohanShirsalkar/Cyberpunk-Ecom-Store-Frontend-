@@ -32,7 +32,7 @@ const ContactUsPage = () => {
 
           <div className="grid md:grid-cols-2 gap-12">
             {/* Contact Form */}
-            <div className="bg-gray-900 bg-opacity-80 border border-cyan-500 p-8 backdrop-blur-sm">
+            <div className="border border-cyan-500 p-8 backdrop-blur-sm">
               <h2 className="text-2xl font-bold text-cyan-400 mb-6 tracking-wide">
                 // SEND_MESSAGE
               </h2>
@@ -95,7 +95,7 @@ const ContactUsPage = () => {
 
             {/* Contact Information */}
             <div className="space-y-8">
-              <div className="bg-gray-900 bg-opacity-80 border border-cyan-500 p-8 backdrop-blur-sm">
+              <div className="border border-cyan-500 p-8 backdrop-blur-sm">
                 <h2 className="text-2xl font-bold text-cyan-400 mb-6 tracking-wide">
                   // DIRECT_CONNECT
                 </h2>

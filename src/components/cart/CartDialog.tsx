@@ -10,24 +10,28 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCartState, toggleCart } from "../../store/cart/cartSlice";
 import CartProductCard from "./CartProductCard";
 import { useNavigate } from "react-router-dom";
+import CartPromoCode from "./CartPromoCode";
 
 const CartDialog = () => {
-  const { cartItems, totalItmes, cartTotal } = useSelector(getCartState);
+  const {
+    cartItems,
+    totalItmes,
+    cartTotal,
+    appliedCoupon,
+    discountAmount,
+    discountedTotal,
+  } = useSelector(getCartState);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleCheckout = () => {
-    if (cartItems?.length === 0) {
-      navigate("/");
-    } else {
-      navigate("/checkout");
-      dispatch(toggleCart());
-    }
+    navigate("/checkout");
+    dispatch(toggleCart());
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-50 flex items-center justify-center sm:p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-30 flex items-center justify-center sm:p-4">
       <div className="bg-black bg-opacity-90 border-2 border-cyan-400 rounded-lg max-w-4xl w-full max-h-screen overflow-y-auto shadow-2xl shadow-cyan-400/20">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-cyan-400">
@@ -70,53 +74,7 @@ const CartDialog = () => {
             )}
 
             {/* Promo Code Section */}
-            {/* <div className="bg-black bg-opacity-40 border border-purple-400 rounded-lg p-4 mt-6">
-              <h4 className="text-white font-mono font-bold mb-3 flex items-center space-x-2">
-                <Gift className="h-5 w-5 text-purple-400" />
-                <span>PROMO_CODES:</span>
-              </h4>
-
-              {appliedPromo ? (
-                <div className="flex items-center justify-between bg-green-500 bg-opacity-20 border border-green-400 rounded p-3">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-green-400 font-mono font-bold">
-                      {appliedPromo.code}
-                    </span>
-                    <span className="text-green-300 font-mono">
-                      -
-                      {appliedPromo.type === "percentage"
-                        ? `${appliedPromo.discount}%`
-                        : `${appliedPromo.discount}₵`}
-                    </span>
-                  </div>
-                  <button
-                    onClick={removePromo}
-                    className="text-red-400 hover:text-red-300 transition-colors"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              ) : (
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
-                    placeholder="ENTER_CODE..."
-                    value={promoCode}
-                    onChange={(e) => setPromoCode(e.target.value)}
-                    className="flex-1 bg-black bg-opacity-50 text-cyan-100 placeholder-gray-500 font-mono px-3 py-2 rounded border border-purple-400 focus:outline-none focus:border-pink-400"
-                  />
-                  <button
-                    onClick={applyPromoCode}
-                    className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-4 py-2 rounded font-mono font-bold hover:from-purple-600 hover:to-pink-700 transition-all"
-                  >
-                    APPLY
-                  </button>
-                </div>
-              )}
-              <p className="text-gray-400 font-mono text-xs mt-2">
-                Try: CYBER25 or NEURAL50
-              </p>
-            </div> */}
+            {totalItmes > 0 && <CartPromoCode appliedCoupon={appliedCoupon} />}
           </div>
 
           {/* Order Summary */}
@@ -132,23 +90,23 @@ const CartDialog = () => {
                   <span>{cartTotal}₵</span>
                 </div>
 
-                {/* {savings > 0 && (
+                {parseFloat(discountAmount) > 0 && (
                   <div className="flex justify-between text-green-400 font-mono">
                     <span>You Saved:</span>
-                    <span>-9999₵</span>
+                    <span>{discountAmount}₵</span>
                   </div>
-                )} */}
+                )}
 
-                {/* {appliedPromo && (
+                {appliedCoupon && (
                   <div className="flex justify-between text-green-400 font-mono">
-                    <span>Promo ({appliedPromo.code}):</span>
-                    <span>-{promoDiscount.toFixed(2)}₵</span>
+                    <span>Discount ({appliedCoupon.code}):</span>
+                    <span>{appliedCoupon.discountPercentage}%</span>
                   </div>
-                )} */}
+                )}
 
                 <div className="flex justify-between text-cyan-300 font-mono">
-                  <span>Neural Tax:</span>
-                  <span>99₵</span>
+                  <span>Tax:</span>
+                  <span>FREE</span>
                 </div>
 
                 <div className="flex justify-between text-cyan-300 font-mono">
@@ -159,7 +117,7 @@ const CartDialog = () => {
                 <div className="border-t border-gray-600 pt-3">
                   <div className="flex justify-between text-pink-400 font-mono font-bold text-lg">
                     <span>TOTAL:</span>
-                    <span>{cartTotal}₵</span>
+                    <span>{discountedTotal}₵</span>
                   </div>
                 </div>
               </div>
@@ -182,10 +140,7 @@ const CartDialog = () => {
             <button
               onClick={handleCheckout}
               className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-4 px-6 rounded font-mono text-lg transition-all duration-300 transform hover:scale-105 shadow-lg shadow-pink-400/30 border border-pink-400 flex items-center justify-center space-x-2"
-              disabled={
-                cartItems?.length === 0 ||
-                cartItems?.some((item) => !item.inStockValue)
-              }
+              disabled={totalItmes === 0}
             >
               <CreditCard className="h-5 w-5" />
               <span>INITIALIZE_CHECKOUT</span>

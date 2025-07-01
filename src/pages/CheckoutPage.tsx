@@ -3,6 +3,7 @@ import { Shield, Lock } from "lucide-react";
 import { useSelector } from "react-redux";
 import { getCartState } from "../store/cart/cartSlice";
 import CheckoutProductCart from "../components/checkoutPage/CheckoutProductCart";
+import CheckoutPromoCode from "../components/checkoutPage/CheckoutPromoCode";
 
 type FormData = {
   email: string;
@@ -27,7 +28,14 @@ const CheckoutPage = () => {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [errors, setErrors] = useState<FormErrors>({});
 
-  const { cartItems, cartTotal } = useSelector(getCartState);
+  const {
+    cartItems,
+    cartTotal,
+    discountedTotal,
+    discountAmount,
+    appliedCoupon,
+    totalItmes,
+  } = useSelector(getCartState);
 
   const [formData, setFormData] = useState<FormData>({
     email: "",
@@ -292,6 +300,11 @@ const CheckoutPage = () => {
             </div>
           </div>
 
+          {/* Promo Code */}
+          {totalItmes > 0 && (
+            <CheckoutPromoCode appliedCoupon={appliedCoupon} />
+          )}
+
           {/* Price Summary */}
           <div className="border border-cyan-900 bg-black/60">
             <div className="p-4 space-y-3 text-sm">
@@ -299,10 +312,22 @@ const CheckoutPage = () => {
                 <span className="text-cyan-600">SUBTOTAL:</span>
                 <span className="text-cyan-400">${cartTotal}</span>
               </div>
-              {/* <div className="flex justify-between">
-                <span className="text-cyan-600">TOTAL SAVINGS</span>
-                <span className="text-cyan-400">${}</span>
-              </div> */}
+              {appliedCoupon && (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-green-600">TOTAL SAVINGS</span>
+                    <span className="text-green-400">${discountAmount}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-cyan-600">
+                      DISCOUNT ({appliedCoupon?.code})
+                    </span>
+                    <span className="text-cyan-400">
+                      {appliedCoupon?.discountPercentage}%
+                    </span>
+                  </div>
+                </>
+              )}
               <div className="flex justify-between">
                 <span className="text-cyan-600">SHIPPING:</span>
                 <span className="text-cyan-400">
@@ -312,7 +337,9 @@ const CheckoutPage = () => {
               <div className="border-t border-cyan-900 pt-3">
                 <div className="flex justify-between text-lg font-bold">
                   <span className="text-cyan-400">TOTAL:</span>
-                  <span className="text-pink-400">${cartTotal + shipping}</span>
+                  <span className="text-pink-400">
+                    ${discountedTotal + shipping}
+                  </span>
                 </div>
               </div>
             </div>
