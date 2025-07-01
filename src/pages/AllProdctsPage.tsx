@@ -1,79 +1,109 @@
+import { useQuery } from "@tanstack/react-query";
+import { getHomeProducts } from "../api/product/productServices";
+import ProductCard from "../components/ProductCard";
+import ProductCardsSK4x1 from "../components/skeletons/products/ProductCardsSK4x1";
+
 const AllProdctsPage = () => {
+  const { data: productsData, isLoading } = useQuery({
+    queryKey: ["homeProducts"],
+    queryFn: getHomeProducts,
+  });
   return (
-    <div className="relative z-10 max-w-7xl mx-auto px-4 py-8">
-      <div
-        className="flex flex-col lg:flex-row gap-8 p-6 animate-pulse text-white"
-        aria-hidden="true"
-      >
-        {/* Left: Image Section */}
-        <div className="flex flex-col gap-4 w-full lg:w-1/2">
-          <div className="bg-gray-800 h-[400px] rounded-lg" />{" "}
-          {/* Main image */}
-          <div className="flex gap-2">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="w-16 h-16 bg-gray-700 rounded" />
-            ))}
-          </div>
-        </div>
-
-        {/* Right: Product Details */}
-        <div className="flex flex-col gap-4 w-full lg:w-1/2">
-          {/* Title and Category */}
-          <div className="h-4 w-1/3 bg-gray-700 rounded" />
-          <div className="h-6 w-3/4 bg-gray-600 rounded" />
-
-          {/* Ratings */}
-          <div className="h-4 w-24 bg-gray-700 rounded" />
-
-          {/* Pricing */}
-          <div className="flex items-center gap-4">
-            <div className="h-6 w-20 bg-gray-600 rounded" />
-            <div className="h-4 w-16 bg-gray-700 rounded" />
-            <div className="h-4 w-12 bg-red-500 rounded" />
-          </div>
-
-          {/* Stock Info */}
-          <div className="h-4 w-2/3 bg-green-700 rounded" />
-
-          {/* Description */}
-          <div className="space-y-2 mt-4">
-            <div className="h-4 w-1/4 bg-gray-700 rounded" />
-            <div className="h-3 w-full bg-gray-700 rounded" />
-            <div className="h-3 w-5/6 bg-gray-700 rounded" />
-          </div>
-
-          {/* Features */}
-          <div className="space-y-2 mt-4">
-            <div className="h-4 w-1/4 bg-gray-700 rounded" />
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-3 w-3/4 bg-pink-700 rounded" />
-            ))}
-          </div>
-
-          {/* Quantity Selector */}
-          <div className="flex items-center gap-2 mt-4">
-            <div className="h-4 w-24 bg-gray-700 rounded" />
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 bg-gray-700 rounded" />
-              <div className="h-8 w-10 bg-gray-800 rounded" />
-              <div className="h-8 w-8 bg-gray-700 rounded" />
+    <div className="min-h-screen">
+      <section>
+        <div className="py-20 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h3 className="text-5xl font-bold text-cyan-400 mb-4 font-mono">
+                PLAYSTATION_CONSOLES
+              </h3>
+              <p className="text-cyan-300 font-mono">
+                &gt; Next-gen PlayStation gaming consoles for ultimate
+                performance
+              </p>
             </div>
-          </div>
 
-          {/* Buttons */}
-          <div className="flex gap-4 mt-4">
-            <div className="h-10 w-40 bg-pink-700 rounded" />
-            <div className="h-10 w-10 bg-gray-700 rounded" />
-            <div className="h-10 w-10 bg-gray-700 rounded" />
-          </div>
-
-          {/* Warning Box */}
-          <div className="mt-4 p-4 bg-yellow-800 rounded">
-            <div className="h-3 w-1/3 bg-yellow-500 rounded mb-2" />
-            <div className="h-3 w-4/5 bg-yellow-600 rounded" />
+            {isLoading ? (
+              <ProductCardsSK4x1 />
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {productsData?.products.map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      </div>
+
+        <div className="py-20 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h3 className="text-5xl font-bold text-cyan-400 mb-4 font-mono">
+                XBOX_CONSOLES
+              </h3>
+              <p className="text-cyan-300 font-mono">
+                &gt; Powerful Xbox gaming consoles for elite gaming experience
+              </p>
+            </div>
+
+            {isLoading ? (
+              <ProductCardsSK4x1 />
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {productsData?.products.map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="py-20 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h3 className="text-5xl font-bold text-cyan-400 mb-4 font-mono">
+                PLAYSTATION_ACCESSORIES
+              </h3>
+              <p className="text-cyan-300 font-mono">
+                &gt; Premium PlayStation accessories and gaming gear
+              </p>
+            </div>
+
+            {isLoading ? (
+              <ProductCardsSK4x1 />
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {productsData?.products.map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="py-20 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h3 className="text-5xl font-bold text-cyan-400 mb-4 font-mono">
+                XBOX_ACCESSORIES
+              </h3>
+              <p className="text-cyan-300 font-mono">
+                &gt; High-performance Xbox accessories and gaming peripherals
+              </p>
+            </div>
+
+            {isLoading ? (
+              <ProductCardsSK4x1 />
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {productsData?.products.map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

@@ -12,6 +12,7 @@ import { getCartState, toggleCart } from "../store/cart/cartSlice";
 import ButtonSpinner from "./spinners/ButtonSpinner";
 import { userLogout } from "../api/auth/authService";
 import useCart from "../hooks/useCart";
+import SearchBar from "./SearchBar";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -40,7 +41,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-black bg-opacity-80 backdrop-blur-md border-b border-cyan-400 shadow-lg shadow-cyan-400/20">
+    <header className="bg-black bg-opacity-80 backdrop-blur-md border-b border-cyan-400 shadow-lg shadow-cyan-400/20 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -87,7 +88,7 @@ const Navbar = () => {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-pink-400 group-hover:w-full transition-all duration-300"></span>
             </NavLink>
             <NavLink
-              to="/contact"
+              to="/contact-us"
               className={({ isActive }) =>
                 `font-mono font-semibold relative group transition-all duration-300 ${
                   isActive
@@ -110,14 +111,7 @@ const Navbar = () => {
 
           {/* Search and Cart */}
           <div className="flex items-center space-x-4">
-            <div className="relative hidden sm:block">
-              <input
-                type="text"
-                placeholder="SEARCH DATABASE..."
-                className="bg-black bg-opacity-50 text-cyan-100 placeholder-gray-500 font-mono px-4 py-2 rounded border border-cyan-400 focus:outline-none focus:border-pink-400 focus:shadow-lg focus:shadow-pink-400/20 transition-all duration-300"
-              />
-              <Search className="absolute right-3 top-2.5 h-5 w-5 text-cyan-400" />
-            </div>
+            <SearchBar />
 
             <button
               onClick={() => dispatch(toggleCart())}

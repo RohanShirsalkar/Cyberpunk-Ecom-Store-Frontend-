@@ -96,10 +96,10 @@ const CheckoutPage = () => {
   };
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-cyan-400 mb-2">
-          SECURE CHECKOUT
+    <main className="max-w-7xl mx-auto px-4 pb-8">
+      <div className="my-12">
+        <h1 className="text-3xl sm:text-5xl text-center font-bold text-cyan-400 mb-2">
+          SECURE_CHECKOUT
         </h1>
         {/* <div className="h-1 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 w-32"></div> */}
       </div>
@@ -335,7 +335,7 @@ const CheckoutPage = () => {
           {/* Complete Order Button */}
           <button
             onClick={processPayment}
-            disabled={isProcessing}
+            disabled={isProcessing || cartItems.length === 0}
             className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:from-gray-600 disabled:to-gray-700 text-white px-6 py-4 font-bold transition-all duration-300 border border-cyan-400 hover:shadow-lg hover:shadow-cyan-400/25 disabled:opacity-50"
           >
             <div className="flex items-center justify-center">
@@ -343,6 +343,11 @@ const CheckoutPage = () => {
                 <>
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                   PROCESSING PAYMENT...
+                </>
+              ) : cartItems.length === 0 ? (
+                <>
+                  <Lock className="w-5 h-5 mr-2" />
+                  CART IS EMPTY
                 </>
               ) : (
                 <>

@@ -42,18 +42,44 @@ const ProductDetailsPage = () => {
 
   useEffect(() => {
     if (cartItems.length > 0) {
-      for (let item of cartItems) {
-        if (item._id === product?._id) {
-          setIsInCart(true);
-          setQuantity(item.productQty);
-        }
-      }
-      const isNotInCart = !cartItems.some((item) => item._id === product?._id);
-      if (isNotInCart) {
+      const cartItem = cartItems.find((item) => item._id === product?._id);
+      if (cartItem) {
+        setIsInCart(true);
+        setQuantity(cartItem.productQty);
+      } else {
         setIsInCart(false);
+        setQuantity(1);
       }
+    } else {
+      setIsInCart(false);
+      setQuantity(1);
     }
-  }, [cartItems, isLoggedIn, product]);
+
+    // Cleanup function
+    return () => {
+      setIsInCart(false);
+      setQuantity(1);
+    };
+  }, [cartItems, product]);
+
+  const handleIncreaseQuantity = () => {
+    if (!productId) return;
+    if (!isInCart) {
+      setQuantity((prev) => prev + 1);
+    } else {
+      increaseQuantity({ quantity, productId });
+    }
+  };
+  const handleDecreaseQuantity = () => {
+    if (!productId) return;
+    if (!isInCart) {
+      if (quantity > 1) {
+        setQuantity((prev) => prev - 1);
+      }
+    } else {
+      decreaseQuantity({ quantity, productId });
+    }
+  };
 
   if (isLoading) {
     return <AllProductsPageSkeleton />;
@@ -191,7 +217,7 @@ const ProductDetailsPage = () => {
                 <span className="text-white font-mono">QUANTITY:</span>
                 <div className="flex items-center border border-cyan-400 rounded">
                   <button
-                    onClick={() => decreaseQuantity({ quantity, productId })}
+                    onClick={handleDecreaseQuantity}
                     className="px-3 py-2 text-cyan-400 hover:bg-cyan-400 hover:text-black transition-all font-mono"
                   >
                     -
@@ -200,7 +226,7 @@ const ProductDetailsPage = () => {
                     {quantity}
                   </span>
                   <button
-                    onClick={() => increaseQuantity({ quantity, productId })}
+                    onClick={handleIncreaseQuantity}
                     className="px-3 py-2 text-cyan-400 hover:bg-cyan-400 hover:text-black transition-all font-mono"
                   >
                     +

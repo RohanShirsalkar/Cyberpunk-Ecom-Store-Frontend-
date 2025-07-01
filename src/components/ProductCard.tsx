@@ -106,6 +106,7 @@ const ProductCard = ({ product }: { product: Product }) => {
               type="number"
               value={quantity}
               // onChange={handleInputChange}
+              disabled={true}
               min="1"
               max="99"
               className={`

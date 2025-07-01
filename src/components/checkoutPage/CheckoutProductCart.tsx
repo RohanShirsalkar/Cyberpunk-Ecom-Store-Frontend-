@@ -4,21 +4,23 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import useCart from "../../hooks/useCart";
 import { useSelector } from "react-redux";
 import { getCartState } from "../../store/cart/cartSlice";
+import { useNavigate } from "react-router-dom";
 
 const CheckoutProductCart = ({ item }: { item: CartItem }) => {
   const [quantity, setQuantity] = useState<number>(1);
   const { increaseQuantity, decreaseQuantity, removeFromCart } = useCart();
   const { cartItems, totalItmes } = useSelector(getCartState);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (totalItmes > 0) {
-      for (let cartitem of cartItems) {
-        if (cartitem._id === item._id) {
-          setQuantity(cartitem.productQty);
-        }
+      const cartItem = cartItems.find((cartitem) => cartitem._id === item._id);
+      if (cartItem) {
+        setQuantity(cartItem.productQty);
       }
     }
-  }, [cartItems, totalItmes]);
+  }, [cartItems, totalItmes, navigate]);
 
   return (
     <div key={item?._id} className="border border-cyan-900/50 p-4">

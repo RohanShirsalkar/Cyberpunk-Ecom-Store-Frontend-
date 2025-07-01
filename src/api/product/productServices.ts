@@ -17,6 +17,11 @@ interface RecommendedProductResponse {
     products: Product[];
 }
 
+interface SearchedProductResponse {
+    success: boolean;
+    products: Product[];
+}
+
 export const getAllProducts = async (): Promise<ProductsResponse> => {
     const response = await api.get<ProductsResponse>("/get-product")
     return response.data
@@ -34,5 +39,10 @@ export const getHomeProducts = async (): Promise<HomeProductResponse> => {
 
 export const getRecommendedProducts = async ({ productId, category }: { productId: string, category: string }): Promise<RecommendedProductResponse> => {
     const response = await api.get<RecommendedProductResponse>(`/product/recommended?productId=${productId}&category=${category}`);
+    return response.data
+}
+
+export const getSearchedProducts = async ({ query }: { query: string }): Promise<SearchedProductResponse> => {
+    const response = await api.get<SearchedProductResponse>(`/product/search?q=${query}`);
     return response.data
 }
