@@ -20,7 +20,9 @@ const layout = () => {
         <Notification />
         {isCartOpen && <CartDialog />}
         {isAuthDialogOpen && <AuthDialog />}
-        <Outlet />
+        <main>
+          <Outlet />
+        </main>
         <Footer />
       </div>
       <style>{`

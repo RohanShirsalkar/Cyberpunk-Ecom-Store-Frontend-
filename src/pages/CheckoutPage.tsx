@@ -1,9 +1,17 @@
 import { useState } from "react";
 import { Shield, Lock } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getCartState } from "../store/cart/cartSlice";
 import CheckoutProductCart from "../components/checkoutPage/CheckoutProductCart";
 import CheckoutPromoCode from "../components/checkoutPage/CheckoutPromoCode";
+import { useMutation } from "@tanstack/react-query";
+import { createOrder } from "../api/order/orderServices";
+import { showErrorToast, showSuccessToast } from "../store/app/appSlice";
+import { getAuthState } from "../store/auth/authSlice";
+import { type PaymentMethod } from "../api/models/orderModel";
+import ConfirmationDialog from "../components/checkoutPage/ConfirmationDialog";
+import useCart from "../hooks/useCart";
+import { useNavigate } from "react-router-dom";
 
 type FormData = {
   email: string;
@@ -12,6 +20,9 @@ type FormData = {
   address: string;
   city: string;
   zip: string;
+  country: string;
+  state: string;
+  phone: string;
 };
 
 type FormErrors = {
@@ -21,12 +32,17 @@ type FormErrors = {
   address?: string;
   city?: string;
   zip?: string;
+  country?: string;
+  state?: string;
+  phone?: string;
 };
 
 const CheckoutPage = () => {
-  const [paymentMethod, setPaymentMethod] = useState<"cod" | "razorpay">("cod");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
+    useState<boolean>(false);
 
   const {
     cartItems,
@@ -37,6 +53,9 @@ const CheckoutPage = () => {
     totalItmes,
   } = useSelector(getCartState);
 
+  const { userId } = useSelector(getAuthState);
+  const { getCart } = useCart();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     email: "",
     firstName: "",
@@ -44,9 +63,48 @@ const CheckoutPage = () => {
     address: "",
     city: "",
     zip: "",
+    country: "",
+    state: "",
+    phone: "",
   });
 
   const shipping: number = 0;
+  const dispatch = useDispatch();
+
+  const { mutate: placeOrder } = useMutation({
+    mutationKey: ["place-order"],
+    mutationFn: createOrder,
+    onSuccess: () => {
+      dispatch(
+        showSuccessToast({
+          title: " Placed",
+          message: "Order placed successfully",
+        })
+      );
+      setFormData({
+        email: "",
+        firstName: "",
+        lastName: "",
+        address: "",
+        city: "",
+        zip: "",
+        country: "",
+        state: "",
+        phone: "",
+      });
+      getCart();
+      navigate("/");
+    },
+    onError: (error) => {
+      console.log(error);
+      dispatch(
+        showErrorToast({ title: "Not Placed", message: "Order not placed" })
+      );
+    },
+    onSettled: () => {
+      setIsProcessing(false);
+    },
+  });
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -77,6 +135,18 @@ const CheckoutPage = () => {
       newErrors.zip = "ZIP code is required";
     }
 
+    if (!formData.country.trim()) {
+      newErrors.country = "Country is required";
+    }
+
+    if (!formData.state.trim()) {
+      newErrors.state = "State is required";
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone is required";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -92,19 +162,54 @@ const CheckoutPage = () => {
   };
 
   const processPayment = () => {
+    console.log(formData);
+    setIsProcessing(true);
+    placeOrder({
+      userId,
+      orderItems: cartItems.map((item) => ({
+        productId: item._id,
+        name: item.name,
+        quantity: item.productQty,
+        price: item.price,
+        image: item.img,
+      })),
+      shippingInfo: {
+        address: formData.address,
+        city: formData.city,
+        postalCode: formData.zip,
+        state: formData.state,
+        country: formData.country,
+        phone: formData.phone,
+      },
+      coupon: appliedCoupon ? appliedCoupon._id : null,
+      itemsPrice: parseFloat(cartTotal),
+      taxPrice: 0,
+      shippingPrice: shipping,
+      discountPrice: parseFloat(discountAmount),
+      totalPrice: parseFloat(discountedTotal) + shipping,
+      paymentMethod: paymentMethod,
+    });
+  };
+
+  const handleConfirmation = (action: "confirm" | "cancel") => {
+    if (action === "confirm") {
+      processPayment();
+    }
+    setIsConfirmationDialogOpen(false);
+  };
+
+  const openConfirmationDialog = () => {
     if (!validateForm()) {
       return;
     }
-    console.log(formData);
-    setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      alert("Payment processed successfully!");
-    }, 3000);
+    setIsConfirmationDialogOpen(true);
   };
 
   return (
     <main className="max-w-7xl mx-auto px-4 pb-8">
+      {isConfirmationDialogOpen && (
+        <ConfirmationDialog handleConfirmation={handleConfirmation} />
+      )}
       <div className="my-12">
         <h1 className="text-3xl sm:text-5xl text-center font-bold text-cyan-400 mb-2">
           SECURE_CHECKOUT
@@ -247,6 +352,63 @@ const CheckoutPage = () => {
                       <p className="text-red-400 text-xs mt-1">{errors.zip}</p>
                     )}
                   </div>
+                  <div>
+                    <input
+                      type="text"
+                      name="country"
+                      placeholder="COUNTRY"
+                      value={formData.country}
+                      onChange={handleInputChange}
+                      className={`w-full bg-black border text-cyan-400 px-4 py-3 placeholder-cyan-700 focus:outline-none ${
+                        errors.country
+                          ? "border-red-500"
+                          : "border-cyan-900 focus:border-cyan-400"
+                      }`}
+                    />
+                    {errors.country && (
+                      <p className="text-red-400 text-xs mt-1">
+                        {errors.country}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      name="state"
+                      placeholder="STATE"
+                      value={formData.state}
+                      onChange={handleInputChange}
+                      className={`w-full bg-black border text-cyan-400 px-4 py-3 placeholder-cyan-700 focus:outline-none ${
+                        errors.state
+                          ? "border-red-500"
+                          : "border-cyan-900 focus:border-cyan-400"
+                      }`}
+                    />
+                    {errors.state && (
+                      <p className="text-red-400 text-xs mt-1">
+                        {errors.state}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      name="phone"
+                      placeholder="PHONE"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className={`w-full bg-black border text-cyan-400 px-4 py-3 placeholder-cyan-700 focus:outline-none ${
+                        errors.phone
+                          ? "border-red-500"
+                          : "border-cyan-900 focus:border-cyan-400"
+                      }`}
+                    />
+                    {errors.phone && (
+                      <p className="text-red-400 text-xs mt-1">
+                        {errors.phone}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -262,9 +424,9 @@ const CheckoutPage = () => {
             <div className="p-6">
               <div className="flex space-x-4">
                 <button
-                  onClick={() => setPaymentMethod("cod")}
+                  onClick={() => setPaymentMethod("cash")}
                   className={`px-4 py-2 border font-bold transition-all ${
-                    paymentMethod === "cod"
+                    paymentMethod === "cash"
                       ? "border-cyan-400 bg-cyan-400 text-black"
                       : "border-cyan-900 text-cyan-400 hover:border-cyan-400"
                   }`}
@@ -361,7 +523,7 @@ const CheckoutPage = () => {
 
           {/* Complete Order Button */}
           <button
-            onClick={processPayment}
+            onClick={openConfirmationDialog}
             disabled={isProcessing || cartItems.length === 0}
             className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:from-gray-600 disabled:to-gray-700 text-white px-6 py-4 font-bold transition-all duration-300 border border-cyan-400 hover:shadow-lg hover:shadow-cyan-400/25 disabled:opacity-50"
           >
