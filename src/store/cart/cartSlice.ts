@@ -103,12 +103,6 @@ export const cartSlice = createSlice({
     }
 })
 
-const getDiscountedTotal = (cartTotal: string, discount: number = 0) => {
-    const discountAmount = (parseFloat(cartTotal) * discount!) / 100;
-    const discountedTotal = (parseFloat(cartTotal) - discountAmount).toFixed(2);
-    return { discountAmount: discountAmount.toFixed(2), discountedTotal }
-}
-
 export const { toggleCart, resetCart, setAppliedCoupon, setCartTotalAfterDiscount } = cartSlice.actions
 export const getCartState = (state: RootState) => state.cart
 export default cartSlice.reducer;
