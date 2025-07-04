@@ -12,6 +12,7 @@ import { type PaymentMethod } from "../api/models/orderModel";
 import ConfirmationDialog from "../components/checkoutPage/ConfirmationDialog";
 import useCart from "../hooks/useCart";
 import { useNavigate } from "react-router-dom";
+import { handleRzpPayment } from "../services/razorpay";
 
 type FormData = {
   email: string;
@@ -68,41 +69,73 @@ const CheckoutPage = () => {
     phone: "",
   });
 
+  const resetForm = () => {
+    setFormData({
+      email: "",
+      firstName: "",
+      lastName: "",
+      address: "",
+      city: "",
+      zip: "",
+      country: "",
+      state: "",
+      phone: "",
+    });
+    setErrors({});
+  };
+
   const shipping: number = 0;
   const dispatch = useDispatch();
 
   const { mutate: placeOrder } = useMutation({
     mutationKey: ["place-order"],
     mutationFn: createOrder,
-    onSuccess: () => {
-      dispatch(
-        showSuccessToast({
-          title: " Placed",
-          message: "Order placed successfully",
-        })
-      );
-      setFormData({
-        email: "",
-        firstName: "",
-        lastName: "",
-        address: "",
-        city: "",
-        zip: "",
-        country: "",
-        state: "",
-        phone: "",
-      });
-      getCart();
-      navigate("/");
+    onSuccess: (res) => {
+      // handle razorpay payment
+      if (res.isPending) {
+        // takes orderId and callback function
+        handleRzpPayment(userId, res.order._id!, (isSuccess) => {
+          setIsProcessing(false);
+          if (isSuccess) {
+            dispatch(
+              showSuccessToast({
+                title: "Placed",
+                message: "Order placed successfully",
+              })
+            );
+            resetForm();
+            getCart();
+            navigate("/");
+          } else {
+            dispatch(
+              showErrorToast({
+                title: "Not Placed",
+                message: "Something went wrong",
+              })
+            );
+          }
+        });
+        return;
+      } else {
+        // handle cash on delivery payment
+        setIsProcessing(false);
+        dispatch(
+          showSuccessToast({
+            title: "Placed",
+            message: "Order placed successfully",
+          })
+        );
+        resetForm();
+        getCart();
+        navigate("/");
+      }
     },
     onError: (error) => {
+      setIsProcessing(false);
       console.log(error);
       dispatch(
         showErrorToast({ title: "Not Placed", message: "Order not placed" })
       );
-    },
-    onSettled: () => {
-      setIsProcessing(false);
     },
   });
 
@@ -162,7 +195,6 @@ const CheckoutPage = () => {
   };
 
   const processPayment = () => {
-    console.log(formData);
     setIsProcessing(true);
     placeOrder({
       userId,
@@ -194,6 +226,7 @@ const CheckoutPage = () => {
   const handleConfirmation = (action: "confirm" | "cancel") => {
     if (action === "confirm") {
       processPayment();
+      //   handleRzpPayment();
     }
     setIsConfirmationDialogOpen(false);
   };

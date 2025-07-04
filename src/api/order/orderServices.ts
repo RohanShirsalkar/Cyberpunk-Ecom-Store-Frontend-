@@ -3,6 +3,7 @@ import type { CreateOrder, Order } from "../models/orderModel"
 
 interface CreateOrderResponse {
     success: boolean,
+    isPending: boolean,
     message: string,
     order: Order,
 }
